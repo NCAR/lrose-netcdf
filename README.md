@@ -8,6 +8,4 @@ Usage:
 
     build_and_install_netcdf  target_dir
 
-where:
-
-    target_dir defaults to $HOME/lrose
+where `target_dir` defaults to `$HOME/lrose`
