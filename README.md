@@ -28,7 +28,11 @@ If you need to support NetCDF for other packages, it makes sense to install in
 
 ## Tar file location
 
-Tar files are stored in 'tar_files' subdirectory of this repo.
+The tar files are stored in the
+
+    tar_files
+
+subdirectory.
 
 ## Performing the build
 
