@@ -44,7 +44,7 @@ function usage() {
 
 # set the install prefix
 
-prefix=$HOME/lrose
+prefix=/usr/local
 
 if [ $# -gt 0 ]
 then
