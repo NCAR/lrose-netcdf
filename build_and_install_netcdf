@@ -5,24 +5,35 @@
 #
 # The latest tar files reside in the 'tar_files' subdirectory.
 #
-# By default the libraries and applications will be installed in:
+# By default the target install directory is /usr/local,
+# so that libraries and applications will be installed in:
 #
-#   $HOME/lrose/include
-#   $HOME/lrose/lib
-#   $HOME/lrose/bin
+#   /usr/local/include
+#   /usr/local/lib
+#   /usr/local/bin
+#
+# If you need to support packages other than LROSE, it is a good
+# idea to install into /usr/local.
+#
+# If you are only supporting LROSE, you should install into the
+# directory into which LROSE will be built and installed,
+# for example:
+#
+#  $HOME/lrose
+#  /usr/local/lrose
 #
 # You can change the install location by specifying it as
 # a single argument to this script.
 #
 # For example:
 #
-#   build_and_install_netcdf /usr/local/lrose
+#   build_and_install_netcdf $HOME/lrose
 #
 # will install in:
 #
-#   /usr/local/lrose/include
-#   /usr/local/lrose/lib
-#   /usr/local/lrose/bin
+#   $HOME/lrose/include
+#   $HOME/lrose/lib
+#   $HOME/lrose/bin
 #
 
 #--------------------------------------------------------------------
