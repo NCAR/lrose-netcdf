@@ -1,6 +1,6 @@
 # lrose-netcdf
 
-## NetCDF and HDF5 support for LROSE.
+### NetCDF and HDF5 support for LROSE.
 
 The NetCDF installations managed by OS package managers (e.g. yum, dpkg) can vary,
 since the NetCDF build configuration provides a large number of options.
@@ -15,7 +15,7 @@ versions of these packages become available.
 And we include a build and install script which will perform the build in the
 correct manner, using configure, and install the packages in your chosen location.
 
-## Choosing where to install
+### Choosing where to install
 
 If you need NetCDF support for LROSE only, you can install in places such as:
 
@@ -26,7 +26,7 @@ If you need to support NetCDF for other packages, it makes sense to install in
 
     /usr/local 
 
-## Tar file location
+### Tar file location
 
 The tar files are stored in the
 
@@ -34,21 +34,17 @@ The tar files are stored in the
 
 subdirectory.
 
-## Performing the build
+### Performing the build
 
   * go to the top level directory of this repository.
   * run the `build_and_install_netcdf` script
 
-## Usage
+### Usage
 
 The script takes a single argument:
 
     build_and_install_netcdf  target_dir
 
 where `target_dir` defaults to `/usr/local`.
-
-
-
-
 
 
