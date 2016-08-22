@@ -20,7 +20,7 @@ correct manner, using configure, and install the packages in your chosen locatio
 If you need NetCDF support for LROSE only, you can install in places such as:
 
     $HOME/lrose
-    /usr/local/lrose
+    /usr/local/lrose (this is the default)
 
 If you need to support NetCDF for other packages, it makes sense to install in
 
@@ -43,8 +43,8 @@ subdirectory.
 
 The script takes a single argument:
 
-    build_and_install_netcdf  target_dir
+    build_and_install_netcdf -x target_dir
 
-where `target_dir` defaults to `/usr/local`.
+where `target_dir` defaults to `/usr/local/lrose`.
 
 
