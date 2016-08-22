@@ -36,38 +36,62 @@
 #   $HOME/lrose/bin
 #
 
+# save starting location and script name
+
+startingDir=`pwd`
+runDir=$(basename $startingDir)
+scriptName=$(basename $0)
+
+# defaults
+
+prefix=/usr/local/lrose
+debug=false
+
 #--------------------------------------------------------------------
 # usage function
 #
 
 function usage() {
     echo
-    echo "Usage: build_and_install_netcdf [ -h ] [ prefix ]"
-    echo
-    echo "  -h: produce this usage list"
-    echo "  optionally set the prefix"
+    echo "Usage: $scriptName [options below]"
+    echo "  -h   :  produce this usage list"
+    echo "  -d   :  turn debugging on"
+    echo "  -x ? :  set prefix"
+    echo "           default is '/usr/local/lrose'"
     echo
 }
 
-# set the path
+# Parse command line options.
+while getopts hdx: OPT; do
+    case "$OPT" in
+        h)
+            usage
+            exit 0
+            ;;
+        d)
+            debug=true
+            ;;
+        x)
+            prefix=$OPTARG
+            ;;
+        \?)
+            # getopts issues an error message
+            echo "Problems with command line usage"
+            usage
+            exit 1
+            ;;
+    esac
+done
 
-#export PATH=.:/bin:/usr/bin:/sbin:/usr/sbin:/usr/bin/X11:/usr/local/bin:/usr/local/sbin
-
-# set the install prefix
-
-prefix=/usr/local
-
-if [ $# -gt 0 ]
+if [ "$debug" == "true" ]
 then
-  if [ "$1" == -h -o "$2" == -h ] 
-  then
-    usage
-    exit 0
-  fi
-  prefix=$1
+  echo "Running $scriptName"
+  echo "  runDir: $runDir"
+  echo "  installing in prefix: $prefix"
 fi
 
-echo "Installing in prefix: $prefix"
+# Remove the switches we parsed above.
+shift `expr $OPTIND - 1`
 
 # start in the netcdf_tar_files directory
 
