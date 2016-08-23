@@ -44,6 +44,7 @@ scriptName=$(basename $0)
 
 # defaults
 
+package=lrose
 prefix=/usr/local/lrose
 debug=false
 
@@ -56,13 +57,15 @@ function usage() {
     echo "Usage: $scriptName [options below]"
     echo "  -h   :  produce this usage list"
     echo "  -d   :  turn debugging on"
+    echo "  -p ? :  set package"
+    echo "           default is 'lrose'"
     echo "  -x ? :  set prefix"
     echo "           default is '/usr/local/lrose'"
     echo
 }
 
 # Parse command line options.
-while getopts hdx: OPT; do
+while getopts hdx:p: OPT; do
     case "$OPT" in
         h)
             usage
@@ -70,6 +73,9 @@ while getopts hdx: OPT; do
             ;;
         d)
             debug=true
+            ;;
+        p)
+            package=$OPTARG
             ;;
         x)
             prefix=$OPTARG
@@ -87,6 +93,7 @@ if [ "$debug" == "true" ]
 then
   echo "Running $scriptName"
   echo "  runDir: $runDir"
+  echo "  package: $package"
   echo "  installing in prefix: $prefix"
 fi
 
@@ -96,6 +103,18 @@ shift `expr $OPTIND - 1`
 # start in the netcdf_tar_files directory
 
 cd tar_files || exit 1
+
+# set 32-bit compile environment for cidd as needed
+
+if [ "$package" == "cidd" ]
+then
+  export CFLAGS="-I${prefix}/include -fPIC -m32 -D_FILE_OFFSET_BITS=64 "
+  export CPPFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
+  export CXXFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
+  export FCFLAGS="-I${prefix}/include -fPIC -m32 "
+else
+  export CPPFLAGS=-I${prefix}/include
+fi
 
 #  Building HDF5
 #  -------------
@@ -125,8 +144,12 @@ cd ..
 # When building the netCDF libraries below, make sure we use
 # the hdf5 libraries we installed above
 
-export CPPFLAGS=-I${prefix}/include
-export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
+if [ "$package" == "cidd" ]
+then
+  export "LDFLAGS=-L${prefix}/lib -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${prefix}/lib"
+else
+  export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
+fi
 
 # Building netcdf C
 # -----------------
