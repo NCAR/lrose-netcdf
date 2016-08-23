@@ -1,7 +1,9 @@
 #! /bin/bash
 #
-# Building and installing NETCDF and HDF5 as required by LROSE
-# ============================================================
+# Building and installing NETCDF and HDF5 as required by CIDD
+# ===========================================================
+#
+# This performs an -m32 build - i.e. 32-bit emulation.
 #
 # The latest tar files reside in the 'tar_files' subdirectory.
 #
@@ -99,14 +101,26 @@ shift `expr $OPTIND - 1`
 
 cd tar_files || exit 1
 
+# set environment
+# ---------------
+
+export CFLAGS="-I${prefix}/include -fPIC -m32 -D_FILE_OFFSET_BITS=64 "
+export CPPFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
+export CXXFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
+export FCFLAGS="-I${prefix}/include -fPIC -m32 "
+export "LDFLAGS=-L${prefix}/lib -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${prefix}/lib"
+
+export CC=gcc
+export CXX=g++
+export F90=gfortran
+export F77=gfortran
+export FC=gfortran
+
 #  Building HDF5
 #  -------------
 
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
-export FC=gfortran
-export F90=gfortran
-export F77=gfortran
 ./configure --prefix=${prefix} --enable-cxx --enable-fortran || exit 1
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
@@ -148,16 +162,16 @@ export CFLAGS="$CFLAGS -DUSE_NETCDF4"
 export CPPFLAGS="$CPPFLAGS -DUSE_NETCDF4"
 export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
  
-# Building netcdf Fortran
-# ------------------------
+# Don't build netcdf Fortran
+# --------------------------
 
-tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
-cd netcdf-fortran*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+#tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
+#cd netcdf-fortran*/
+#./configure --enable-shared --prefix=${prefix} || exit 1
+#make clean || exit 1        # remove files from previous builds, if any
+#make -j 8 || exit 1
+#make install || exit 1
+#cd ..
 
 # Building netcdf C++ legacy
 # --------------------------
