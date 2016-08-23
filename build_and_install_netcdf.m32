@@ -4,6 +4,8 @@
 # ===========================================================
 #
 # This performs an -m32 build - i.e. 32-bit emulation.
+# Used for CIDD.
+# Does not support FORTRAN.
 #
 # The latest tar files reside in the 'tar_files' subdirectory.
 #
@@ -112,16 +114,13 @@ export "LDFLAGS=-L${prefix}/lib -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${pref
 
 export CC=gcc
 export CXX=g++
-export F90=gfortran
-export F77=gfortran
-export FC=gfortran
 
 #  Building HDF5
 #  -------------
 
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
-./configure --prefix=${prefix} --enable-cxx --enable-fortran || exit 1
+./configure --prefix=${prefix} --enable-cxx || exit 1
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
@@ -162,17 +161,6 @@ export CFLAGS="$CFLAGS -DUSE_NETCDF4"
 export CPPFLAGS="$CPPFLAGS -DUSE_NETCDF4"
 export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
  
-# Don't build netcdf Fortran
-# --------------------------
-
-#tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
-#cd netcdf-fortran*/
-#./configure --enable-shared --prefix=${prefix} || exit 1
-#make clean || exit 1        # remove files from previous builds, if any
-#make -j 8 || exit 1
-#make install || exit 1
-#cd ..
-
 # Building netcdf C++ legacy
 # --------------------------
 
