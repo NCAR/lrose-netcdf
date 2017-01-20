@@ -1,0 +1,22 @@
+# .gitignore at top level
+
+# cvs
+
+CVS
+Entries.Log
+Entries.static
+
+# emacs
+
+~*
+*~
+
+# untarred dirs
+
+tar_files/hdf5-1.8.17/
+tar_files/netcdf-4.4.1/
+tar_files/netcdf-cxx-4.2/
+tar_files/netcdf-cxx4-4.3.0/
+tar_files/netcdf-fortran-4.4.4/
+tar_files/udunits-2.2.20/
+
