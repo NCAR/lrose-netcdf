@@ -45,8 +45,11 @@ runDir=$(basename $startingDir)
 scriptName=$(basename $0)
 
 # defaults
-
-prefix=/usr/local/lrose
+if [ -z $LROSE_INSTALL_DIR ]; then
+	prefix=/usr/local/lrose
+else
+	prefix=$LROSE_INSTALL_DIR
+fi
 debug=false
 
 #--------------------------------------------------------------------
