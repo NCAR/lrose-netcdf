@@ -106,11 +106,11 @@ cd tar_files || exit 1
 # set environment
 # ---------------
 
-export CFLAGS="-I${prefix}/include -fPIC -m32 -D_FILE_OFFSET_BITS=64 "
-export CPPFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
-export CXXFLAGS="-I${prefix}/include -m32 -D_FILE_OFFSET_BITS=64 "
-export FCFLAGS="-I${prefix}/include -fPIC -m32 "
-export "LDFLAGS=-L${prefix}/lib -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${prefix}/lib"
+export CFLAGS=" -fPIC -m32 -D_FILE_OFFSET_BITS=64 "
+export CPPFLAGS=" -m32 -D_FILE_OFFSET_BITS=64 "
+export CXXFLAGS=" -m32 -D_FILE_OFFSET_BITS=64 "
+export FCFLAGS=" -fPIC -m32 "
+export "LDFLAGS= -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${prefix}/lib"
 
 export CC=gcc
 export CXX=g++
@@ -121,18 +121,7 @@ export CXX=g++
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
 ./configure --prefix=${prefix} --enable-cxx || exit 1
-make clean || exit 1  # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
-
-# Building udunits2
-# -----------------
-
-tar xvfz udunits-*.tar.gz # this may untar over a previous directory
-cd udunits-*/
-./configure --prefix=${prefix} || exit 1
-make clean || exit 1  # remove files from previous builds, if any
+#make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
@@ -149,7 +138,7 @@ export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
 tar xvfz netcdf-4*.tar.gz # this may untar over a previous directory
 cd netcdf-4*/
 ./configure --enable-netcdf4 --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1  # remove files from previous builds, if any
+#make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
@@ -167,7 +156,7 @@ export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
 tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
 cd netcdf-cxx-4*/
 ./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1      # remove files from previous builds, if any
+#make clean || exit 1      # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
@@ -178,7 +167,7 @@ cd ..
 tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
 cd netcdf-cxx4-4*/
 ./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
+#make clean || exit 1        # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
