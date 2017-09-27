@@ -47,4 +47,57 @@ The script takes a single argument:
 
 where `target_dir` defaults to `/usr/local/lrose`.
 
+### 32-bit build
+
+If you need to build netcdf and hdf5 libraries that are 32-bit compatible:
+  * go to the top level directory of this repository.
+  * run the `build_and_install_netcdf.m32` script
+
+For this to work, you will need to install 32-bit versions of the
+system libraries.
+
+On Redhat-based hosts you can achieve this by running:
+
+```
+yum install -y \
+gcc gcc-c++ gcc-gfortran \
+glibc-devel.i686 libX11-devel.i686 libXext-devel.i686 \
+libtiff-devel.i686 libpng-devel.i686 \
+libstdc++-devel.i686 libtiff-devel.i686 \
+zlib-devel.i686 expat-devel.i686 flex-devel.i686 \
+fftw-devel.i686 bzip2-devel.i686
+```
+
+On Debian, you need to run the following:
+
+```
+  /usr/bin/dpkg --add-architecture i386
+  aptitude update
+```
+
+and use apt-get to install the following:
+
+```
+  aptitude install libx11-6:i386 \
+                   libstdc++-4.9-dev:i386 \
+                   libpng12-dev:i386 \
+                   libx11-dev:i386 \
+                   libxext-dev:i386 \
+                   lib32stdc++-4.9-dev \
+                   libstdc++5:i386 \
+                   libstdc++6:i386 \
+                   libxml2:i386 \
+                   libgtk2.0-0:i386 \
+                   libgdk-pixbuf2.0-0:i386 \
+                   libbz2-dev:i386
+```
+
+### Usage
+
+The script takes a single argument:
+
+    build_and_install_netcdf -x target_dir
+
+where `target_dir` defaults to `/usr/local/lrose`.
+
 
