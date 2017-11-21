@@ -1,0 +1,187 @@
+#! /bin/bash
+#
+# Building and installing NETCDF and HDF5 as required by LROSE
+# ============================================================
+#
+# The latest tar files reside in the 'tar_files' subdirectory.
+#
+# By default the target install directory is /usr/local/lrose,
+# so that libraries and applications will be installed in:
+#
+#   /usr/local/lrose/include
+#   /usr/local/lrose/lib
+#   /usr/local/lrose/bin
+#
+# You can change the install location by using the -x command line
+# argument to this script.
+#
+# If you need to support packages other than LROSE, it is a good
+# idea to install into /usr/local. To do this:
+#
+#    build_and_install_netcdf -x /usr/local
+#
+# If you are only supporting LROSE, you should install into the
+# directory into which LROSE will be built and installed,
+# for example:
+#
+#  $HOME/lrose, or
+#  /usr/local/lrose (the default)
+#
+# For example:
+#
+#   build_and_install_netcdf -x $HOME/lrose
+#
+# will install in:
+#
+#   $HOME/lrose/include
+#   $HOME/lrose/lib
+#   $HOME/lrose/bin
+#
+
+# save starting location and script name
+
+startingDir=`pwd`
+runDir=$(basename $startingDir)
+scriptName=$(basename $0)
+
+# defaults
+
+prefix=/usr/local/lrose
+debug=false
+
+#--------------------------------------------------------------------
+# usage function
+#
+
+function usage() {
+    echo
+    echo "Usage: $scriptName [options below]"
+    echo "  -h   :  produce this usage list"
+    echo "  -d   :  turn debugging on"
+    echo "  -x ? :  set prefix"
+    echo "           default is '/usr/local/lrose'"
+    echo
+}
+
+# Parse command line options.
+while getopts hdx: OPT; do
+    case "$OPT" in
+        h)
+            usage
+            exit 0
+            ;;
+        d)
+            debug=true
+            ;;
+        x)
+            prefix=$OPTARG
+            ;;
+        \?)
+            # getopts issues an error message
+            echo "Problems with command line usage"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$debug" == "true" ]
+then
+  echo "Running $scriptName"
+  echo "  runDir: $runDir"
+  echo "  installing in prefix: $prefix"
+fi
+
+# Remove the switches we parsed above.
+shift `expr $OPTIND - 1`
+
+# start in the netcdf_tar_files directory
+
+cd tar_files || exit 1
+
+# either us this definition for CC and CPPC or remove the "=" in -rpath= below
+#export CC=gcc-7
+#export CPPC=g++-7
+
+#  Building HDF5
+#  -------------
+
+tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
+cd hdf5-*/
+export FC=gfortran-7
+export F90=gfortran-7
+export F77=gfortran-7
+./configure --prefix=${prefix} --enable-cxx --enable-fortran || exit 1
+make clean || exit 1  # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# Building udunits2
+# -----------------
+
+tar xvfz udunits-*.tar.gz # this may untar over a previous directory
+cd udunits-*/
+./configure --prefix=${prefix} || exit 1
+make clean || exit 1  # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# When building the netCDF libraries below, make sure we use
+# the hdf5 libraries we installed above
+
+export CPPFLAGS=-I${prefix}/include
+export LDFLAGS="-L${prefix}/lib -Wl,-rpath,${prefix}/lib"
+
+# Building netcdf C
+# -----------------
+
+tar xvfz netcdf-4*.tar.gz # this may untar over a previous directory
+cd netcdf-4*/
+./configure --enable-netcdf4 --enable-shared --prefix=${prefix} || exit 1
+make clean || exit 1  # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# ---------------------------
+# append USE_NETCDF4 to FLAGS
+
+export CFLAGS="$CFLAGS -DUSE_NETCDF4"
+export CPPFLAGS="$CPPFLAGS -DUSE_NETCDF4"
+export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
+ 
+# Building netcdf Fortran
+# ------------------------
+
+tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
+cd netcdf-fortran*/
+./configure --enable-shared --prefix=${prefix} || exit 1
+make clean || exit 1        # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# Building netcdf C++ legacy
+# --------------------------
+
+tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
+cd netcdf-cxx-4*/
+./configure --enable-shared --prefix=${prefix} || exit 1
+make clean || exit 1      # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# Building netcdf C++ 4
+# ---------------------
+
+tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
+cd netcdf-cxx4-4*/
+./configure --enable-shared --prefix=${prefix} || exit 1
+make clean || exit 1        # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
