@@ -117,7 +117,7 @@ cd ..
 # the hdf5 libraries we installed above
 
 export CPPFLAGS=-I${prefix}/include
-export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
+export LDFLAGS="-L${prefix}/lib -L${prefix}/lib64 -Wl,-rpath=${prefix}/lib"
 
 # Building netcdf C
 # -----------------
