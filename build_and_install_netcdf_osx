@@ -5,12 +5,12 @@
 #
 # The latest tar files reside in the 'tar_files' subdirectory.
 #
-# By default the target install directory is $HOME/lrose,
+# By default the target install directory is /usr/local/lrose,
 # so that libraries and applications will be installed in:
 #
-#   $HOME/lrose/include
-#   $HOME/lrose/lib
-#   $HOME/lrose/bin
+#   /usr/local/lrose/include
+#   /usr/local/lrose/lib
+#   /usr/local/lrose/bin
 #
 # You can change the install location by using the -x command line
 # argument to this script.
@@ -20,11 +20,22 @@
 #
 #    build_and_install_netcdf -x /usr/local
 #
-# This will install in:
+# If you are only supporting LROSE, you should install into the
+# directory into which LROSE will be built and installed,
+# for example:
 #
-#   /usr/local/lrose/include
-#   /usr/local/lrose/lib
-#   /usr/local/lrose/bin
+#  $HOME/lrose, or
+#  /usr/local/lrose (the default)
+#
+# For example:
+#
+#   build_and_install_netcdf -x $HOME/lrose
+#
+# will install in:
+#
+#   $HOME/lrose/include
+#   $HOME/lrose/lib
+#   $HOME/lrose/bin
 #
 
 # save starting location and script name
@@ -35,7 +46,7 @@ scriptName=$(basename $0)
 
 # defaults
 
-prefix=${HOME}/lrose
+prefix=/usr/local/lrose
 debug=false
 
 #--------------------------------------------------------------------
@@ -48,7 +59,7 @@ function usage() {
     echo "  -h   :  produce this usage list"
     echo "  -d   :  turn debugging on"
     echo "  -x ? :  set prefix"
-    echo "           default is '${HOME}/lrose'"
+    echo "           default is '/usr/local/lrose'"
     echo
 }
 
@@ -88,14 +99,18 @@ shift `expr $OPTIND - 1`
 
 cd tar_files || exit 1
 
+# either us this definition for CC and CPPC or remove the "=" in -rpath= below
+#export CC=gcc-7
+#export CPPC=g++-7
+
 #  Building HDF5
 #  -------------
 
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
-export FC=gfortran
-export F90=gfortran
-export F77=gfortran
+export FC=gfortran-7
+export F90=gfortran-7
+export F77=gfortran-7
 ./configure --prefix=${prefix} --enable-cxx --enable-fortran || exit 1
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
@@ -117,7 +132,7 @@ cd ..
 # the hdf5 libraries we installed above
 
 export CPPFLAGS=-I${prefix}/include
-export LDFLAGS="-L${prefix}/lib -L${prefix}/lib64 -Wl,-rpath=${prefix}/lib"
+export LDFLAGS="-L${prefix}/lib -Wl,-rpath,${prefix}/lib"
 
 # Building netcdf C
 # -----------------
