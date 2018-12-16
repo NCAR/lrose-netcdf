@@ -137,7 +137,7 @@ export LDFLAGS="-L${prefix}/lib -Wl,-rpath,${prefix}/lib"
 # Building netcdf C
 # -----------------
 
-tar xvfz netcdf-4*.tar.gz # this may untar over a previous directory
+tar xvfz netcdf-c-*.tar.gz # this may untar over a previous directory
 cd netcdf-4*/
 ./configure --enable-netcdf4 --enable-shared --prefix=${prefix} || exit 1
 make clean || exit 1  # remove files from previous builds, if any
