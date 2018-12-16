@@ -3,14 +3,16 @@
 # Building and installing NETCDF and HDF5 as required by LROSE
 # ============================================================
 #
+# This is intended for Apple OSX.
+#
 # The latest tar files reside in the 'tar_files' subdirectory.
 #
-# By default the target install directory is /usr/local/lrose,
+# By default the target install directory is $HOME/lrose,
 # so that libraries and applications will be installed in:
 #
-#   /usr/local/lrose/include
-#   /usr/local/lrose/lib
-#   /usr/local/lrose/bin
+#   $HOME/lrose/include
+#   $HOME/lrose/lib
+#   $HOME/lrose/bin
 #
 # You can change the install location by using the -x command line
 # argument to this script.
@@ -20,22 +22,11 @@
 #
 #    build_and_install_netcdf -x /usr/local
 #
-# If you are only supporting LROSE, you should install into the
-# directory into which LROSE will be built and installed,
-# for example:
+# This will install in:
 #
-#  $HOME/lrose, or
-#  /usr/local/lrose (the default)
-#
-# For example:
-#
-#   build_and_install_netcdf -x $HOME/lrose
-#
-# will install in:
-#
-#   $HOME/lrose/include
-#   $HOME/lrose/lib
-#   $HOME/lrose/bin
+#   /usr/local/lrose/include
+#   /usr/local/lrose/lib
+#   /usr/local/lrose/bin
 #
 
 # save starting location and script name
@@ -46,7 +37,7 @@ scriptName=$(basename $0)
 
 # defaults
 
-prefix=/usr/local/lrose
+prefix=${HOME}/lrose
 debug=false
 
 #--------------------------------------------------------------------
@@ -59,7 +50,7 @@ function usage() {
     echo "  -h   :  produce this usage list"
     echo "  -d   :  turn debugging on"
     echo "  -x ? :  set prefix"
-    echo "           default is '/usr/local/lrose'"
+    echo "           default is '${HOME}/lrose'"
     echo
 }
 
