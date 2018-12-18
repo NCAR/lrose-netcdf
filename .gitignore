@@ -21,3 +21,6 @@ tar_files/netcdf-fortran-4.4.4
 
 tar_files/netcdf-4.4.1.1
 tar_files/udunits-2.2.25
+
+tar_files/hdf5-1.10.4
+tar_files/netcdf-c-4.6.2
