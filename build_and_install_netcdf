@@ -105,13 +105,13 @@ cd ..
 # Building udunits2
 # -----------------
 
-tar xvfz udunits-*.tar.gz # this may untar over a previous directory
-cd udunits-*/
-./configure --prefix=${prefix} || exit 1
-make clean || exit 1  # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+#tar xvfz udunits-*.tar.gz # this may untar over a previous directory
+#cd udunits-*/
+#./configure --prefix=${prefix} || exit 1
+#make clean || exit 1  # remove files from previous builds, if any
+#make -j 8 || exit 1
+#make install || exit 1
+#cd ..
 
 # When building the netCDF libraries below, make sure we use
 # the hdf5 libraries we installed above
@@ -140,33 +140,33 @@ export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
 # Building netcdf Fortran
 # ------------------------
 
-tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
-cd netcdf-fortran*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+#tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
+#cd netcdf-fortran*/
+#./configure --enable-shared --prefix=${prefix} || exit 1
+#make clean || exit 1        # remove files from previous builds, if any
+#make -j 8 || exit 1
+#make install || exit 1
+#cd ..
 
 # Building netcdf C++ legacy
 # --------------------------
 
-tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
-cd netcdf-cxx-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1      # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+#tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
+#cd netcdf-cxx-4*/
+#./configure --enable-shared --prefix=${prefix} || exit 1
+#make clean || exit 1      # remove files from previous builds, if any
+#make -j 8 || exit 1
+#make install || exit 1
+#cd ..
 
 # Building netcdf C++ 4
 # ---------------------
 
-tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
-cd netcdf-cxx4-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+#tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
+#cd netcdf-cxx4-4*/
+#./configure --enable-shared --prefix=${prefix} || exit 1
+#make clean || exit 1        # remove files from previous builds, if any
+#make -j 8 || exit 1
+#make install || exit 1
+#cd ..
 
