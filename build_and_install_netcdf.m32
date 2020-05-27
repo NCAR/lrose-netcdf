@@ -118,7 +118,14 @@ export CXX=g++
 
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
-./configure --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
+# fix configure file to remove OLD_HEADER_FILENAME
+if [ "$debug" == "true" ]
+then
+    ../../fix_hdf5_configure.py --debug
+else
+    ../../fix_hdf5_configure.py
+fi
+./configure.new --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1

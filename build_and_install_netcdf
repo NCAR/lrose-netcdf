@@ -105,11 +105,19 @@ cd hdf5-*/
 export FC=gfortran
 export F90=gfortran
 export F77=gfortran
+# fix configure file to remove OLD_HEADER_FILENAME
+if [ "$debug" == "true" ]
+then
+    ../../fix_hdf5_configure.py --debug
+else
+    ../../fix_hdf5_configure.py
+fi
+# run the new configure
 if [ "$complete" == "true" ]
 then
-    ./configure --prefix=${prefix} --enable-cxx --enable-fortran --enable-tests=no || exit 1
+    ./configure.new --prefix=${prefix} --enable-cxx --enable-fortran --enable-tests=no || exit 1
 else
-    ./configure --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
+    ./configure.new --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
 fi
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
