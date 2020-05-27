@@ -37,6 +37,7 @@ scriptName=$(basename $0)
 
 prefix=${HOME}/lrose
 debug=false
+complete = false
 
 #--------------------------------------------------------------------
 # usage function
@@ -47,13 +48,14 @@ function usage() {
     echo "Usage: $scriptName [options below]"
     echo "  -h   :  produce this usage list"
     echo "  -d   :  turn debugging on"
+    echo "  -c   :  complete install - includes fortran, c++ and udunits support"
     echo "  -x ? :  set prefix"
     echo "           default is '${HOME}/lrose'"
     echo
 }
 
 # Parse command line options.
-while getopts hdx: OPT; do
+while getopts hdcx: OPT; do
     case "$OPT" in
         h)
             usage
@@ -61,6 +63,9 @@ while getopts hdx: OPT; do
             ;;
         d)
             debug=true
+            ;;
+        c)
+            complete=true
             ;;
         x)
             prefix=$OPTARG
@@ -79,6 +84,10 @@ then
   echo "Running $scriptName"
   echo "  runDir: $runDir"
   echo "  installing in prefix: $prefix"
+  if [ "$complete" == "true" ]
+  then
+    echo "Complete install - including fortran, c++ and udunits support"
+  fi
 fi
 
 # Remove the switches we parsed above.
@@ -96,7 +105,12 @@ cd hdf5-*/
 export FC=gfortran
 export F90=gfortran
 export F77=gfortran
-./configure --prefix=${prefix} --enable-cxx --enable-fortran || exit 1
+if [ "$complete" == "true" ]
+then
+    ./configure --prefix=${prefix} --enable-cxx --enable-fortran --enable-tests=no || exit 1
+else
+    ./configure --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
+fi
 make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
@@ -105,13 +119,16 @@ cd ..
 # Building udunits2
 # -----------------
 
-tar xvfz udunits-*.tar.gz # this may untar over a previous directory
-cd udunits-*/
-./configure --prefix=${prefix} || exit 1
-make clean || exit 1  # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz udunits-*.tar.gz # this may untar over a previous directory
+    cd udunits-*/
+    ./configure --prefix=${prefix} || exit 1
+    make clean || exit 1  # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
 # When building the netCDF libraries below, make sure we use
 # the hdf5 libraries we installed above
@@ -140,34 +157,43 @@ export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
 # Building netcdf Fortran
 # ------------------------
 
-tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
-cd netcdf-fortran*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz netcdf-fortran*.tar.gz # this may untar over a previous directory
+    cd netcdf-fortran*/
+    ./configure --enable-shared --prefix=${prefix} || exit 1
+    make clean || exit 1        # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
 # Building netcdf C++ legacy
 # --------------------------
 
-tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
-cd netcdf-cxx-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1      # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
+    cd netcdf-cxx-4*/
+    ./configure --enable-shared --prefix=${prefix} || exit 1
+    make clean || exit 1      # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
 # Building netcdf C++ 4
 # ---------------------
 
-tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
-cd netcdf-cxx4-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
+    cd netcdf-cxx4-4*/
+    ./configure --enable-shared --prefix=${prefix} || exit 1
+    make clean || exit 1        # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
 
