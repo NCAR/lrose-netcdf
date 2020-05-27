@@ -41,6 +41,7 @@ scriptName=$(basename $0)
 
 prefix=${HOME}/lrose
 debug=false
+complete=false
 
 #--------------------------------------------------------------------
 # usage function
@@ -51,13 +52,14 @@ function usage() {
     echo "Usage: $scriptName [options below]"
     echo "  -h   :  produce this usage list"
     echo "  -d   :  turn debugging on"
+    echo "  -c   :  complete install - includes netcdf c++"
     echo "  -x ? :  set prefix"
     echo "           default is '${HOME}/lrose'"
     echo
 }
 
 # Parse command line options.
-while getopts hdx: OPT; do
+while getopts hdcx: OPT; do
     case "$OPT" in
         h)
             usage
@@ -65,6 +67,9 @@ while getopts hdx: OPT; do
             ;;
         d)
             debug=true
+            ;;
+        c)
+            complete=true
             ;;
         x)
             prefix=$OPTARG
@@ -83,6 +88,10 @@ then
   echo "Running $scriptName"
   echo "  runDir: $runDir"
   echo "  installing in prefix: $prefix"
+  if [ "$complete" == "true" ]
+  then
+    echo "Complete install - including fortran, c++ and udunits support"
+  fi
 fi
 
 # Remove the switches we parsed above.
@@ -109,8 +118,8 @@ export CXX=g++
 
 tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
 cd hdf5-*/
-./configure --prefix=${prefix} --enable-cxx || exit 1
-#make clean || exit 1  # remove files from previous builds, if any
+./configure --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
+make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
@@ -126,8 +135,13 @@ export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
 
 tar xvfz netcdf-c-*.tar.gz # this may untar over a previous directory
 cd netcdf-c-*/
-./configure --enable-netcdf4 --enable-shared --prefix=${prefix} || exit 1
-#make clean || exit 1  # remove files from previous builds, if any
+if [ "$complete" == "true" ]
+then
+    ./configure --prefix=${prefix} --enable-netcdf4 --enable-shared || exit 1
+else
+    ./configure --prefix=${prefix} --enable-shared || exit 1
+fi
+make clean || exit 1  # remove files from previous builds, if any
 make -j 8 || exit 1
 make install || exit 1
 cd ..
@@ -142,22 +156,28 @@ export LDFLAGS="$LDFLAGS -DUSE_NETCDF4"
 # Building netcdf C++ legacy
 # --------------------------
 
-tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
-cd netcdf-cxx-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-#make clean || exit 1      # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz netcdf-cxx-4*.tar.gz # this may untar over a previous directory
+    cd netcdf-cxx-4*/
+    ./configure --enable-shared --prefix=${prefix} || exit 1
+    make clean || exit 1      # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
 # Building netcdf C++ 4
 # ---------------------
 
-tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
-cd netcdf-cxx4-4*/
-./configure --enable-shared --prefix=${prefix} || exit 1
-#make clean || exit 1        # remove files from previous builds, if any
-make -j 8 || exit 1
-make install || exit 1
-cd ..
+if [ "$complete" == "true" ]
+then
+    tar xvfz netcdf-cxx4-4*.tar.gz  # this may untar over a previous directory
+    cd netcdf-cxx4-4*/
+    ./configure --enable-shared --prefix=${prefix} || exit 1
+    make clean || exit 1        # remove files from previous builds, if any
+    make -j 8 || exit 1
+    make install || exit 1
+    cd ..
+fi
 
