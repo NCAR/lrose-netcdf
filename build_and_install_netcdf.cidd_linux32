@@ -1,0 +1,141 @@
+#! /bin/bash
+#
+# Building and installing NETCDF and HDF5 as required by CIDD
+# ===========================================================
+#
+# This performs an -m32 build - i.e. 32-bit emulation.
+# Used for CIDD.
+# Does not support FORTRAN.
+#
+# The latest tar files reside in the 'tar_files' subdirectory.
+#
+# By default the target install directory is $HOME/lrose,
+# so that libraries and applications will be installed in:
+#
+#   $HOME/lrose/include
+#   $HOME/lrose/lib
+#   $HOME/lrose/bin
+#
+# You can change the install location by using the -x command line
+# argument to this script.
+#
+# If you need to support packages other than LROSE, it is a good
+# idea to install into /usr/local. To do this:
+#
+#    build_and_install_netcdf -x /usr/local
+#
+# This will install in:
+#
+#   /usr/local/lrose/include
+#   /usr/local/lrose/lib
+#   /usr/local/lrose/bin
+#
+
+# save starting location and script name
+
+startingDir=`pwd`
+runDir=$(basename $startingDir)
+scriptName=$(basename $0)
+
+# defaults
+
+prefix=${HOME}/lrose
+debug=false
+
+#--------------------------------------------------------------------
+# usage function
+#
+
+function usage() {
+    echo
+    echo "Usage: $scriptName [options below]"
+    echo "  -h   :  produce this usage list"
+    echo "  -d   :  turn debugging on"
+    echo "  -x ? :  set prefix"
+    echo "           default is '${HOME}/lrose'"
+    echo
+}
+
+# Parse command line options.
+while getopts hdx: OPT; do
+    case "$OPT" in
+        h)
+            usage
+            exit 0
+            ;;
+        d)
+            debug=true
+            ;;
+        x)
+            prefix=$OPTARG
+            ;;
+        \?)
+            # getopts issues an error message
+            echo "Problems with command line usage"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$debug" == "true" ]
+then
+  echo "Running $scriptName"
+  echo "  runDir: $runDir"
+  echo "  installing in prefix: $prefix"
+fi
+
+# Remove the switches we parsed above.
+shift `expr $OPTIND - 1`
+
+# start in the netcdf_tar_files directory
+
+cd tar_files || exit 1
+
+# set environment
+# ---------------
+
+export CFLAGS=" -fPIC -m32 -D_FILE_OFFSET_BITS=64 "
+export CPPFLAGS=" -m32 -D_FILE_OFFSET_BITS=64 "
+export CXXFLAGS=" -m32 -D_FILE_OFFSET_BITS=64 "
+export FCFLAGS=" -fPIC -m32 "
+export "LDFLAGS= -Wl,-rpath,'\$\$ORIGIN'/cidd_runtime_libs:${prefix}/lib"
+
+export CC=gcc
+export CXX=g++
+
+#  Building HDF5
+#  -------------
+
+tar xvfz hdf5-*.tar.gz    # this may untar over a previous directory
+cd hdf5-*/
+# fix configure file to remove OLD_HEADER_FILENAME
+if [ "$debug" == "true" ]
+then
+    ../../fix_hdf5_configure.py --debug
+else
+    ../../fix_hdf5_configure.py
+fi
+./configure.new --prefix=${prefix} --enable-cxx --enable-tests=no || exit 1
+make clean || exit 1  # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
+# When building the netCDF libraries below, make sure we use
+# the hdf5 libraries we installed above
+
+export CPPFLAGS=-I${prefix}/include
+export LDFLAGS="-L${prefix}/lib -Wl,-rpath=${prefix}/lib"
+
+# Building netcdf C
+# -----------------
+
+tar xvfz netcdf-c-*.tar.gz # this may untar over a previous directory
+cd netcdf-c-*/
+./configure --prefix=${prefix} --disable-dap --enable-shared || exit 1
+make clean || exit 1  # remove files from previous builds, if any
+make -j 8 || exit 1
+make install || exit 1
+cd ..
+
