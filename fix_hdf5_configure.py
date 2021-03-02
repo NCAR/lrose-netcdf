@@ -91,7 +91,7 @@ def shellCmd(cmd):
             print("Child exited with code: ", retcode, file=sys.stderr)
             sys.exit(1)
         else:
-            if (options.verbose):
+            if (options.debug):
                 print("Child returned code: ", retcode, file=sys.stderr)
     except OSError as e:
         print("Execution failed:", e, file=sys.stderr)
